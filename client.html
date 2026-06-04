@@ -1,0 +1,700 @@
+<!DOCTYPE html>
+<html lang="uk">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0">
+<title>CREAGYM — Клієнтський портал</title>
+<style>
+*{margin:0;padding:0;box-sizing:border-box}
+:root{
+  --bg:#050A11;--p1:#0D1117;--p2:#161B22;--p3:#1C2128;
+  --bd:#21262D;--bd2:#30363D;
+  --m:#E6EDF3;--m2:#8B949E;--w:#fff;
+  --y:#FFD300;--ym:#1a1500;
+  --gr:#22C55E;--rd:#EF4444;--bl:#3B82F6;
+  --f:'Inter',sans-serif;
+  --r:14px;
+}
+body{background:var(--bg);color:var(--m);font-family:var(--f);min-height:100vh;font-size:14px}
+.screen{display:none;min-height:100vh;flex-direction:column}
+.screen.active{display:flex}
+
+/* Header */
+.hdr{padding:16px 20px;display:flex;align-items:center;justify-content:space-between;background:var(--p1);border-bottom:1px solid var(--bd);position:sticky;top:0;z-index:100}
+.hdr-logo{font-size:16px;font-weight:800;color:var(--y);letter-spacing:.05em}
+.hdr-back{width:32px;height:32px;border-radius:8px;border:1px solid var(--bd2);background:var(--p2);color:var(--m2);font-size:16px;cursor:pointer;display:flex;align-items:center;justify-content:center}
+
+/* Auth */
+.auth-wrap{flex:1;display:flex;flex-direction:column;align-items:center;justify-content:center;padding:24px 20px;gap:24px}
+.auth-logo{text-align:center}
+.auth-logo-icon{width:72px;height:72px;background:var(--y);border-radius:18px;display:flex;align-items:center;justify-content:center;font-size:32px;font-weight:900;color:var(--bg);margin:0 auto 12px}
+.auth-logo h1{font-size:22px;font-weight:800;color:var(--y);letter-spacing:.08em}
+.auth-logo p{font-size:12px;color:var(--m2);margin-top:4px}
+.auth-form{width:100%;max-width:360px;background:var(--p1);border:1px solid var(--bd2);border-radius:16px;padding:24px;display:flex;flex-direction:column;gap:14px}
+.auth-form h2{font-size:16px;font-weight:700;margin-bottom:4px}
+.fi{width:100%;padding:12px 14px;border-radius:10px;border:1px solid var(--bd2);background:var(--p2);color:var(--m);font-family:var(--f);font-size:14px;outline:none}
+.fi:focus{border-color:var(--y)}
+.fi::placeholder{color:var(--m2)}
+.btn{width:100%;padding:13px;border-radius:10px;border:none;font-family:var(--f);font-size:14px;font-weight:700;cursor:pointer;transition:opacity .15s}
+.btn:hover{opacity:.9}
+.btn-y{background:var(--y);color:var(--bg)}
+.btn-ghost{background:var(--p2);color:var(--m2);border:1px solid var(--bd2)}
+.err-msg{display:none;padding:10px 12px;border-radius:8px;background:#EF444414;border:1px solid #EF444430;color:var(--rd);font-size:12px}
+.err-msg.show{display:block}
+.link-btn{background:none;border:none;color:var(--y);font-family:var(--f);font-size:13px;cursor:pointer;text-decoration:underline}
+
+/* Main */
+.main-wrap{flex:1;overflow-y:auto;padding:16px 16px 100px}
+.greeting{padding:4px 0 16px}
+.greeting h2{font-size:20px;font-weight:700}
+.greeting p{font-size:13px;color:var(--m2);margin-top:4px}
+
+/* Cards */
+.card{background:var(--p1);border:1px solid var(--bd2);border-radius:14px;padding:16px;margin-bottom:12px}
+.card h3{font-size:13px;font-weight:700;color:var(--m2);text-transform:uppercase;letter-spacing:.07em;margin-bottom:12px}
+
+/* Sub card */
+.sub-active{background:linear-gradient(135deg,#0D1117,#1a1500);border:1px solid var(--y)40;border-radius:14px;padding:16px;margin-bottom:12px}
+.sub-name{font-size:16px;font-weight:800}
+.sub-prog-wrap{height:6px;background:var(--p3);border-radius:3px;margin:10px 0}
+.sub-prog{height:100%;border-radius:3px;background:var(--y);transition:width .3s}
+.sub-info{display:flex;justify-content:space-between;font-size:12px;color:var(--m2)}
+.badge{display:inline-block;padding:3px 8px;border-radius:20px;font-size:11px;font-weight:600}
+.badge-gr{background:#22C55E14;color:var(--gr)}
+.badge-rd{background:#EF444414;color:var(--rd)}
+.badge-bl{background:#3B82F614;color:var(--bl)}
+.badge-or{background:#F9731614;color:#F97316}
+
+/* Sub types list */
+.sub-item{background:var(--p1);border:1px solid var(--bd2);border-radius:12px;padding:14px;margin-bottom:10px;cursor:pointer;transition:border-color .15s}
+.sub-item:hover{border-color:var(--y)}
+.sub-item-hd{display:flex;justify-content:space-between;align-items:center;margin-bottom:6px}
+.sub-item-name{font-size:15px;font-weight:700}
+.sub-item-price{font-size:18px;font-weight:800;color:var(--y)}
+.sub-item-meta{font-size:12px;color:var(--m2)}
+
+/* Bottom nav */
+.bnav{position:fixed;bottom:0;left:0;right:0;background:var(--p1);border-top:1px solid var(--bd);display:flex;padding:8px 0 calc(8px + env(safe-area-inset-bottom))}
+.bnav-btn{flex:1;display:flex;flex-direction:column;align-items:center;gap:3px;padding:6px;border:none;background:none;cursor:pointer;color:var(--m2);font-family:var(--f);font-size:10px}
+.bnav-btn.active{color:var(--y)}
+.bnav-icon{font-size:20px;line-height:1}
+
+/* History */
+.hist-item{display:flex;align-items:center;gap:10px;padding:10px 0;border-bottom:1px solid var(--bd)}
+.hist-item:last-child{border-bottom:none}
+.hist-dot{width:8px;height:8px;border-radius:50%;background:var(--gr);flex-shrink:0}
+.hist-date{font-size:13px;font-weight:600}
+.hist-branch{font-size:11px;color:var(--m2)}
+
+/* Payment modal */
+.mo-pay{position:fixed;inset:0;background:rgba(0,0,0,0.7);z-index:200;display:none;align-items:flex-end;justify-content:center;backdrop-filter:blur(4px)}
+.mo-pay.open{display:flex}
+.mo-pay-body{background:var(--p1);border:1px solid var(--bd2);border-radius:20px 20px 0 0;width:100%;max-width:480px;padding:24px 20px calc(24px + env(safe-area-inset-bottom));display:flex;flex-direction:column;gap:14px}
+.mo-pay-drag{width:40px;height:4px;background:var(--bd2);border-radius:2px;margin:0 auto -6px}
+.mo-pay h3{font-size:16px;font-weight:700}
+.pay-total{display:flex;justify-content:space-between;align-items:center;padding:12px 14px;background:var(--p2);border-radius:10px}
+
+/* Spinner */
+.spin{width:24px;height:24px;border:3px solid var(--bd2);border-top-color:var(--y);border-radius:50%;animation:sp .7s linear infinite;margin:20px auto}
+@keyframes sp{to{transform:rotate(360deg)}}
+
+/* Toast */
+.toast{position:fixed;top:20px;left:50%;transform:translateX(-50%);background:#22C55E;color:#fff;padding:10px 20px;border-radius:10px;font-size:13px;font-weight:600;z-index:999;opacity:0;transition:opacity .3s;pointer-events:none}
+.toast.show{opacity:1}
+</style>
+</head>
+<body>
+
+<!-- TOAST -->
+<div class="toast" id="toast"></div>
+
+<!-- ===== ЕКРАН: ВХІД ===== -->
+<div class="screen active" id="scr-auth">
+  <div class="auth-wrap">
+    <div class="auth-logo">
+      <div class="auth-logo-icon">CG</div>
+      <h1>CREAGYM</h1>
+      <p>Твій фітнес-клуб</p>
+    </div>
+    <div class="auth-form">
+      <h2 id="auth-title">Вхід</h2>
+      <div class="err-msg" id="auth-err">Невірний email або пароль</div>
+      <div id="reg-name-wrap" style="display:none">
+        <input class="fi" id="reg-name" placeholder="Ваше ім'я та прізвище">
+      </div>
+      <input class="fi" id="auth-email" type="email" placeholder="Email" autocomplete="email">
+      <input class="fi" id="auth-phone" placeholder="+38 067 000 00 00" style="display:none">
+      <input class="fi" id="auth-pass" type="password" placeholder="Пароль" autocomplete="current-password">
+      <div id="reg-pass2-wrap" style="display:none">
+        <input class="fi" id="auth-pass2" type="password" placeholder="Повторіть пароль">
+      </div>
+      <button class="btn btn-y" id="auth-btn" onclick="doAuth()">Увійти</button>
+      <div style="text-align:center;font-size:13px;color:var(--m2)">
+        <span id="auth-switch-text">Немає акаунту?</span>
+        <button class="link-btn" id="auth-switch-btn" onclick="toggleAuthMode()">Зареєструватись</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ===== ЕКРАН: ГОЛОВНА ===== -->
+<div class="screen" id="scr-home">
+  <div class="hdr">
+    <div class="hdr-logo">CREAGYM</div>
+    <div style="font-size:11px;color:var(--m2)" id="hdr-user-name"></div>
+  </div>
+  <div class="main-wrap">
+    <div class="greeting">
+      <h2 id="home-greeting">Привіт! 👋</h2>
+      <p id="home-subtitle">Твій персональний кабінет</p>
+    </div>
+
+    <!-- Активний абонемент -->
+    <div id="home-sub-block"></div>
+
+    <!-- Швидкі дії -->
+    <div class="card">
+      <h3>Дії</h3>
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px">
+        <button onclick="showScreen('scr-shop')" style="padding:14px 10px;border-radius:10px;background:var(--ym);border:1px solid var(--y)30;color:var(--y);font-family:var(--f);font-size:13px;font-weight:700;cursor:pointer">
+          🎫 Купити абонемент
+        </button>
+        <button onclick="showScreen('scr-visits')" style="padding:14px 10px;border-radius:10px;background:var(--p2);border:1px solid var(--bd2);color:var(--m);font-family:var(--f);font-size:13px;font-weight:600;cursor:pointer">
+          📋 Мої відвідування
+        </button>
+      </div>
+    </div>
+
+    <!-- Філії -->
+    <div class="card">
+      <h3>Наші зали</h3>
+      <div id="home-branches"></div>
+    </div>
+  </div>
+  <div class="bnav">
+    <button class="bnav-btn active" onclick="showScreen('scr-home')"><div class="bnav-icon">🏠</div>Головна</button>
+    <button class="bnav-btn" onclick="showScreen('scr-shop')"><div class="bnav-icon">🎫</div>Абонементи</button>
+    <button class="bnav-btn" onclick="showScreen('scr-visits')"><div class="bnav-icon">📋</div>Відвідування</button>
+    <button class="bnav-btn" onclick="showScreen('scr-profile')"><div class="bnav-icon">👤</div>Профіль</button>
+  </div>
+</div>
+
+<!-- ===== ЕКРАН: МАГАЗИН АБОНЕМЕНТІВ ===== -->
+<div class="screen" id="scr-shop">
+  <div class="hdr">
+    <button class="hdr-back" onclick="showScreen('scr-home')">←</button>
+    <div class="hdr-logo">Абонементи</div>
+    <div style="width:32px"></div>
+  </div>
+  <div class="main-wrap">
+    <p style="font-size:13px;color:var(--m2);margin-bottom:16px">Оберіть абонемент та оплатіть онлайн</p>
+    <div id="shop-list"><div class="spin"></div></div>
+  </div>
+</div>
+
+<!-- ===== ЕКРАН: ВІДВІДУВАННЯ ===== -->
+<div class="screen" id="scr-visits">
+  <div class="hdr">
+    <button class="hdr-back" onclick="showScreen('scr-home')">←</button>
+    <div class="hdr-logo">Відвідування</div>
+    <div style="width:32px"></div>
+  </div>
+  <div class="main-wrap">
+    <div id="visits-list"><div class="spin"></div></div>
+  </div>
+</div>
+
+<!-- ===== ЕКРАН: ПРОФІЛЬ ===== -->
+<div class="screen" id="scr-profile">
+  <div class="hdr">
+    <button class="hdr-back" onclick="showScreen('scr-home')">←</button>
+    <div class="hdr-logo">Профіль</div>
+    <div style="width:32px"></div>
+  </div>
+  <div class="main-wrap">
+    <div id="profile-content"><div class="spin"></div></div>
+  </div>
+</div>
+
+<!-- ===== МОДАЛКА ОПЛАТИ ===== -->
+<div class="mo-pay" id="mo-pay">
+  <div class="mo-pay-body">
+    <div class="mo-pay-drag"></div>
+    <h3 id="pay-title">Оплата абонементу</h3>
+    <div class="sub-item" style="cursor:default">
+      <div class="sub-item-hd">
+        <div class="sub-item-name" id="pay-sub-name">—</div>
+        <div class="sub-item-price" id="pay-sub-price">—</div>
+      </div>
+      <div class="sub-item-meta" id="pay-sub-meta">—</div>
+    </div>
+    <div class="pay-total">
+      <span style="font-size:13px;color:var(--m2)">До сплати:</span>
+      <span style="font-size:20px;font-weight:800;color:var(--y)" id="pay-amount">0 ₴</span>
+    </div>
+    <div id="pay-methods" style="display:flex;flex-direction:column;gap:8px"></div>
+    <button class="btn btn-ghost" onclick="closePayModal()">Скасувати</button>
+  </div>
+</div>
+
+<script>
+// ===== CONFIG =====
+const SB_URL='https://rkknbltiylsvmycbbyde.supabase.co';
+const SB_KEY='eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InJra25ibHRpeWxzdm15Y2JieWRlIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzcxNzkyMTksImV4cCI6MjA5Mjc1NTIxOX0.SrXSluAh8TMcXoCqVZLk_mylTSwzBu8tJDuUSudD-mA';
+
+// ===== STATE =====
+let curClient=null;
+let _subTypes=[];
+let _acqSettings={};
+let _authMode='login'; // login | register
+
+// ===== HELPERS =====
+async function apiGet(table,params=''){
+  const r=await fetch(`${SB_URL}/rest/v1/${table}${params}`,{headers:{'apikey':SB_KEY,'Authorization':'Bearer '+SB_KEY}});
+  return r.json();
+}
+async function apiPost(table,data){
+  const r=await fetch(`${SB_URL}/rest/v1/${table}`,{method:'POST',headers:{'apikey':SB_KEY,'Authorization':'Bearer '+SB_KEY,'Content-Type':'application/json','Prefer':'return=representation'},body:JSON.stringify(data)});
+  return r.json();
+}
+async function apiPatch(table,filter,data){
+  const r=await fetch(`${SB_URL}/rest/v1/${table}?${filter}`,{method:'PATCH',headers:{'apikey':SB_KEY,'Authorization':'Bearer '+SB_KEY,'Content-Type':'application/json','Prefer':'return=representation'},body:JSON.stringify(data)});
+  return r.json();
+}
+
+async function sha256(str){
+  const buf=await crypto.subtle.digest('SHA-256',new TextEncoder().encode(str));
+  return Array.from(new Uint8Array(buf)).map(b=>b.toString(16).padStart(2,'0')).join('');
+}
+
+function showToast(msg,color='#22C55E'){
+  const t=document.getElementById('toast');
+  t.textContent=msg;t.style.background=color;t.classList.add('show');
+  setTimeout(()=>t.classList.remove('show'),3000);
+}
+
+function showScreen(id){
+  document.querySelectorAll('.screen').forEach(s=>s.classList.remove('active'));
+  document.getElementById(id)?.classList.add('active');
+  document.querySelectorAll('.bnav-btn').forEach(b=>b.classList.remove('active'));
+  const map={'scr-home':0,'scr-shop':1,'scr-visits':2,'scr-profile':3};
+  if(map[id]!==undefined){
+    const btns=document.querySelectorAll('.bnav-btn');
+    if(btns[map[id]]) btns[map[id]].classList.add('active');
+  }
+  if(id==='scr-shop') loadShop();
+  if(id==='scr-visits') loadVisits();
+  if(id==='scr-profile') loadProfile();
+}
+
+// ===== AUTH =====
+let isRegistering=false;
+function toggleAuthMode(){
+  isRegistering=!isRegistering;
+  document.getElementById('auth-title').textContent=isRegistering?'Реєстрація':'Вхід';
+  document.getElementById('auth-btn').textContent=isRegistering?'Зареєструватись':'Увійти';
+  document.getElementById('auth-switch-text').textContent=isRegistering?'Вже є акаунт?':'Немає акаунту?';
+  document.getElementById('auth-switch-btn').textContent=isRegistering?'Увійти':'Зареєструватись';
+  document.getElementById('reg-name-wrap').style.display=isRegistering?'block':'none';
+  document.getElementById('reg-pass2-wrap').style.display=isRegistering?'block':'none';
+  document.getElementById('auth-phone').style.display=isRegistering?'block':'none';
+  document.getElementById('auth-err').classList.remove('show');
+}
+
+async function doAuth(){
+  const email=document.getElementById('auth-email').value.trim();
+  const pass=document.getElementById('auth-pass').value;
+  const err=document.getElementById('auth-err');
+  err.classList.remove('show');
+
+  if(!email||!pass){err.textContent='Заповніть всі поля';err.classList.add('show');return;}
+
+  const hash=await sha256(pass);
+  const btn=document.getElementById('auth-btn');
+  btn.textContent='...';btn.disabled=true;
+
+  try{
+    if(isRegistering){
+      const name=document.getElementById('reg-name').value.trim();
+      const phone=document.getElementById('auth-phone').value.trim();
+      const pass2=document.getElementById('auth-pass2').value;
+      if(!name){err.textContent="Введіть ім'я";err.classList.add('show');return;}
+      if(pass!==pass2){err.textContent='Паролі не співпадають';err.classList.add('show');return;}
+
+      // Перевіряємо чи є вже такий email
+      const exists=await apiGet('clients',`?email=eq.${encodeURIComponent(email)}&select=id`);
+      if(exists&&exists.length>0){err.textContent='Цей email вже зареєстровано';err.classList.add('show');return;}
+
+      // Генеруємо ID
+      const cid='CG-'+Math.random().toString(36).substr(2,6).toUpperCase();
+      const nameParts=name.split(' ');
+      const r=await apiPost('clients',{
+        id:cid,
+        first_name:nameParts[0]||name,
+        last_name:nameParts.slice(1).join(' ')||'',
+        email,phone,
+        password_hash:hash,
+        status:'new'
+      });
+      const cl=Array.isArray(r)?r[0]:r;
+      if(!cl?.id){err.textContent=cl?.message||'Помилка реєстрації';err.classList.add('show');return;}
+      curClient=cl;
+    } else {
+      const r=await apiGet('clients',`?email=eq.${encodeURIComponent(email)}&password_hash=eq.${encodeURIComponent(hash)}&select=*`);
+      if(!r||!r.length){err.textContent='Невірний email або пароль';err.classList.add('show');return;}
+      curClient=r[0];
+    }
+    localStorage.setItem('cg_client',JSON.stringify(curClient));
+    loadHome();
+    showScreen('scr-home');
+  }catch(e){err.textContent='Помилка: '+e.message;err.classList.add('show');}
+  finally{btn.textContent=isRegistering?'Зареєструватись':'Увійти';btn.disabled=false;}
+}
+
+// ===== HOME =====
+async function loadHome(){
+  if(!curClient)return;
+  document.getElementById('hdr-user-name').textContent=curClient.first_name||'';
+  document.getElementById('home-greeting').textContent=`Привіт, ${curClient.first_name}! 👋`;
+
+  // Активний абонемент
+  const subs=await apiGet('subscriptions',`?client_id=eq.${curClient.id}&status=in.(active,frozen)&order=end_date.desc&limit=1`)||[];
+  const sub=subs[0];
+  const subBlock=document.getElementById('home-sub-block');
+  if(sub){
+    const endD=new Date(sub.end_date+'T00:00:00');
+    const today=new Date();today.setHours(0,0,0,0);
+    const dl=Math.ceil((endD-today)/(1000*60*60*24));
+    const totalDays=sub.start_date?Math.ceil((endD-new Date(sub.start_date+'T00:00:00'))/(1000*60*60*24)):30;
+    const pct=Math.max(0,Math.min(100,Math.round(dl/totalDays*100)));
+    const isFrozen=sub.status==='frozen';
+    subBlock.innerHTML=`<div class="sub-active">
+      <div style="display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:8px">
+        <div class="sub-name">${sub.type_name||'Абонемент'}</div>
+        <span class="badge ${isFrozen?'badge-bl':dl<=3?'badge-rd':'badge-gr'}">${isFrozen?'❄️ Заморожено':dl<=3?'⚠️ Закінчується':'✅ Активний'}</span>
+      </div>
+      <div class="sub-prog-wrap"><div class="sub-prog" style="width:${pct}%;background:${isFrozen?'var(--bl)':dl<=3?'var(--rd)':'var(--y)'}"></div></div>
+      <div class="sub-info">
+        <span>${isFrozen?'Заморожено':'Залишилось'}: ${dl} дн.</span>
+        <span>до ${endD.toLocaleDateString('uk-UA')}</span>
+      </div>
+    </div>`;
+  } else {
+    subBlock.innerHTML=`<div class="card" style="text-align:center;padding:20px">
+      <div style="font-size:32px;margin-bottom:10px">🎫</div>
+      <div style="font-weight:700;margin-bottom:6px">Немає активного абонементу</div>
+      <div style="font-size:12px;color:var(--m2);margin-bottom:14px">Придбайте абонемент щоб почати тренування</div>
+      <button onclick="showScreen('scr-shop')" class="btn btn-y" style="width:auto;padding:10px 20px">Купити абонемент</button>
+    </div>`;
+  }
+
+  // Філії
+  const branches=await apiGet('branches','?is_active=eq.true&order=created_at.asc')||[];
+  document.getElementById('home-branches').innerHTML=branches.map(b=>`
+    <div style="display:flex;gap:10px;align-items:center;padding:10px 0;border-bottom:1px solid var(--bd)">
+      <div style="font-size:20px">🏋️</div>
+      <div>
+        <div style="font-size:13px;font-weight:600">${b.name}</div>
+        ${b.address?`<div style="font-size:11px;color:var(--m2)">${b.address}</div>`:''}
+      </div>
+    </div>`).join('');
+}
+
+// ===== SHOP =====
+async function loadShop(){
+  const el=document.getElementById('shop-list');
+  el.innerHTML='<div class="spin"></div>';
+
+  // Завантажуємо налаштування еквайрингу
+  const settings=await apiGet('settings','?key=in.(acq_provider,acq_merchant,acq_public_key,acq_merchant_id,acq_client_url)')||[];
+  settings.forEach(s=>_acqSettings[s.key]=s.value);
+
+  // Завантажуємо мережеві абонементи
+  const types=await apiGet('subscription_types','?is_active=eq.true&is_network=eq.true&order=price.asc')||[];
+  _subTypes=types;
+
+  if(!types.length){
+    el.innerHTML='<div style="text-align:center;color:var(--m2);padding:40px 0;font-size:13px">Немає доступних абонементів</div>';
+    return;
+  }
+
+  const hasAcq=!!_acqSettings.acq_provider;
+  el.innerHTML=types.map(t=>{
+    const disc=curClient?.streak>1?getClientDiscount(curClient.streak+1):0;
+    const finalPrice=disc?Math.round(t.price*(1-disc/100)):t.price;
+    return `<div class="sub-item" onclick="openPayModal('${t.id}')">
+      <div class="sub-item-hd">
+        <div class="sub-item-name">${t.name}</div>
+        <div>
+          ${disc?`<div style="text-decoration:line-through;color:var(--m2);font-size:12px;text-align:right">${t.price} ₴</div>`:''}
+          <div class="sub-item-price">${finalPrice} ₴</div>
+        </div>
+      </div>
+      <div class="sub-item-meta">${t.days} ${t.duration_unit||'дн.'} · ${t.class_name||'Клубний'}${disc?` · 🔥 -${disc}% серія`:''}</div>
+      ${t.description?`<div style="font-size:12px;color:var(--m2);margin-top:6px">${t.description}</div>`:''}
+      ${!hasAcq?'<div style="font-size:11px;color:var(--or);margin-top:6px">⚠️ Оплата тільки в залі</div>':''}
+    </div>`;
+  }).join('');
+}
+
+function getClientDiscount(streak){
+  // Базова логіка якщо немає налаштувань з БД
+  if(streak<=1)return 0;
+  return Math.min((streak-1)*3,33);
+}
+
+// ===== PAYMENT MODAL =====
+let _paySubId=null;
+function openPayModal(subTypeId){
+  const t=_subTypes.find(x=>x.id===subTypeId);
+  if(!t)return;
+  _paySubId=subTypeId;
+
+  const disc=curClient?.streak>1?getClientDiscount(curClient.streak+1):0;
+  const finalPrice=disc?Math.round(t.price*(1-disc/100)):t.price;
+
+  document.getElementById('pay-sub-name').textContent=t.name;
+  document.getElementById('pay-sub-price').textContent=finalPrice+' ₴';
+  document.getElementById('pay-sub-meta').textContent=`${t.days} ${t.duration_unit||'дн.'} · ${t.class_name||'Клубний'}`;
+  document.getElementById('pay-amount').textContent=finalPrice+' ₴';
+
+  const methodsEl=document.getElementById('pay-methods');
+  const provider=_acqSettings.acq_provider;
+
+  if(provider==='wayforpay'){
+    methodsEl.innerHTML=`<button class="btn btn-y" onclick="payWayForPay('${subTypeId}',${finalPrice})">💳 Оплатити через WayForPay</button>`;
+  } else if(provider==='liqpay'){
+    methodsEl.innerHTML=`<button class="btn btn-y" onclick="payLiqPay('${subTypeId}',${finalPrice})">💳 Оплатити через LiqPay</button>`;
+  } else if(provider==='fondy'){
+    methodsEl.innerHTML=`<button class="btn btn-y" onclick="payFondy('${subTypeId}',${finalPrice})">💳 Оплатити через Fondy</button>`;
+  } else {
+    methodsEl.innerHTML=`<div style="text-align:center;padding:12px;color:var(--m2);font-size:13px">Онлайн оплата не налаштована.<br>Оплатіть абонемент безпосередньо в залі.</div>`;
+  }
+
+  document.getElementById('mo-pay').classList.add('open');
+}
+
+function closePayModal(){
+  document.getElementById('mo-pay').classList.remove('open');
+  _paySubId=null;
+}
+
+// WayForPay
+async function payWayForPay(subTypeId,amount){
+  const t=_subTypes.find(x=>x.id===subTypeId);if(!t)return;
+  const orderRef='CG-'+Date.now();
+  const merchant=_acqSettings.acq_merchant;
+  const clientUrl=_acqSettings.acq_client_url||window.location.origin;
+
+  // Форма WayForPay
+  const form=document.createElement('form');
+  form.method='POST';
+  form.action='https://secure.wayforpay.com/pay';
+  form.style.display='none';
+  const fields={
+    merchantAccount:merchant,
+    merchantDomainName:window.location.hostname,
+    orderReference:orderRef,
+    orderDate:Math.floor(Date.now()/1000),
+    amount:amount,
+    currency:'UAH',
+    productName:t.name,
+    productCount:1,
+    productPrice:amount,
+    clientFirstName:curClient?.first_name||'',
+    clientLastName:curClient?.last_name||'',
+    clientEmail:curClient?.email||'',
+    clientPhone:curClient?.phone||'',
+    returnUrl:clientUrl+'?order='+orderRef+'&sub='+subTypeId,
+    serviceUrl:SB_URL+'/functions/v1/wayforpay-webhook'
+  };
+  Object.entries(fields).forEach(([k,v])=>{
+    const i=document.createElement('input');
+    i.type='hidden';i.name=k;i.value=v;
+    form.appendChild(i);
+  });
+  document.body.appendChild(form);
+
+  // Зберігаємо замовлення локально
+  localStorage.setItem('cg_pending_order',JSON.stringify({orderRef,subTypeId,amount}));
+
+  showToast('Переходимо до оплати...');
+  setTimeout(()=>form.submit(),500);
+}
+
+// LiqPay
+async function payLiqPay(subTypeId,amount){
+  const t=_subTypes.find(x=>x.id===subTypeId);if(!t)return;
+  const clientUrl=_acqSettings.acq_client_url||window.location.origin;
+  const publicKey=_acqSettings.acq_public_key;
+  const orderRef='CG-'+Date.now();
+
+  const data={
+    version:3,action:'pay',
+    public_key:publicKey,
+    amount,currency:'UAH',
+    description:t.name,
+    order_id:orderRef,
+    result_url:clientUrl+'?order='+orderRef+'&sub='+subTypeId,
+    server_url:SB_URL+'/functions/v1/liqpay-webhook'
+  };
+  const dataStr=btoa(JSON.stringify(data));
+
+  const form=document.createElement('form');
+  form.method='POST';
+  form.action='https://www.liqpay.ua/api/3/checkout';
+  form.style.display='none';
+  [['data',dataStr],['signature','']].forEach(([k,v])=>{
+    const i=document.createElement('input');i.type='hidden';i.name=k;i.value=v;form.appendChild(i);
+  });
+  document.body.appendChild(form);
+  localStorage.setItem('cg_pending_order',JSON.stringify({orderRef,subTypeId,amount}));
+  showToast('Переходимо до LiqPay...');
+  setTimeout(()=>form.submit(),500);
+}
+
+// Fondy
+async function payFondy(subTypeId,amount){
+  const t=_subTypes.find(x=>x.id===subTypeId);if(!t)return;
+  const clientUrl=_acqSettings.acq_client_url||window.location.origin;
+  const orderRef='CG-'+Date.now();
+
+  // Fondy потребує серверного підпису — показуємо інструкцію
+  showToast('Fondy потребує серверної інтеграції','#F97316');
+  closePayModal();
+}
+
+// ===== VISITS =====
+async function loadVisits(){
+  if(!curClient)return;
+  const el=document.getElementById('visits-list');
+  el.innerHTML='<div class="spin"></div>';
+
+  const visits=await apiGet('visits',`?client_id=eq.${curClient.id}&order=visited_at.desc&limit=50`)||[];
+  const branches=await apiGet('branches','?select=id,name')||[];
+  const bMap={};branches.forEach(b=>bMap[b.id]=b.name);
+
+  if(!visits.length){
+    el.innerHTML='<div style="text-align:center;color:var(--m2);padding:40px 0;font-size:13px">Ще не було відвідувань</div>';
+    return;
+  }
+
+  el.innerHTML=`<div class="card">
+    <h3>Останні відвідування (${visits.length})</h3>
+    ${visits.map(v=>{
+      const d=new Date(v.visited_at);
+      return `<div class="hist-item">
+        <div class="hist-dot"></div>
+        <div style="flex:1">
+          <div class="hist-date">${d.toLocaleDateString('uk-UA',{day:'2-digit',month:'long'})} о ${d.toLocaleTimeString('uk-UA',{hour:'2-digit',minute:'2-digit'})}</div>
+          ${v.branch_id&&bMap[v.branch_id]?`<div class="hist-branch">🏋️ ${bMap[v.branch_id]}</div>`:''}
+        </div>
+      </div>`;
+    }).join('')}
+  </div>`;
+}
+
+// ===== PROFILE =====
+async function loadProfile(){
+  if(!curClient)return;
+  const el=document.getElementById('profile-content');
+
+  const subs=await apiGet('subscriptions',`?client_id=eq.${curClient.id}&order=created_at.desc&limit=5`)||[];
+
+  el.innerHTML=`
+    <div class="card" style="margin-bottom:12px">
+      <h3>Особисті дані</h3>
+      <div style="display:flex;flex-direction:column;gap:8px">
+        <div style="display:flex;justify-content:space-between;font-size:13px">
+          <span style="color:var(--m2)">Ім'я</span>
+          <span>${curClient.first_name||''} ${curClient.last_name||''}</span>
+        </div>
+        <div style="display:flex;justify-content:space-between;font-size:13px">
+          <span style="color:var(--m2)">Email</span>
+          <span>${curClient.email||'—'}</span>
+        </div>
+        <div style="display:flex;justify-content:space-between;font-size:13px">
+          <span style="color:var(--m2)">Телефон</span>
+          <span>${curClient.phone||'—'}</span>
+        </div>
+        <div style="display:flex;justify-content:space-between;font-size:13px">
+          <span style="color:var(--m2)">ID</span>
+          <span style="color:var(--m2)">${curClient.id}</span>
+        </div>
+        ${curClient.streak>0?`<div style="display:flex;justify-content:space-between;font-size:13px">
+          <span style="color:var(--m2)">🔥 Серія</span>
+          <span style="color:var(--y);font-weight:700">x${curClient.streak} (знижка -${getClientDiscount(curClient.streak+1)}% на наступний)</span>
+        </div>`:''}
+      </div>
+    </div>
+    <div class="card" style="margin-bottom:12px">
+      <h3>Останні абонементи</h3>
+      ${subs.length?subs.map(s=>{
+        const stMap={active:'badge-gr',frozen:'badge-bl',expired:'badge-rd',pending:'badge-or'};
+        const stL={active:'Активний',frozen:'Заморожений',expired:'Прострочений',pending:'Очікує'};
+        return `<div style="display:flex;justify-content:space-between;align-items:center;padding:8px 0;border-bottom:1px solid var(--bd)">
+          <div>
+            <div style="font-size:13px;font-weight:600">${s.type_name}</div>
+            <div style="font-size:11px;color:var(--m2)">${new Date(s.created_at).toLocaleDateString('uk-UA')}</div>
+          </div>
+          <div style="text-align:right">
+            <span class="badge ${stMap[s.status]||'badge-or'}">${stL[s.status]||s.status}</span>
+            <div style="font-size:12px;color:var(--m2);margin-top:2px">${s.price} ₴</div>
+          </div>
+        </div>`;
+      }).join(''):'<div style="color:var(--m2);font-size:13px">Немає абонементів</div>'}
+    </div>
+    <button class="btn btn-ghost" onclick="logout()" style="margin-top:8px">Вийти з акаунту</button>`;
+}
+
+function logout(){
+  if(!confirm('Вийти з акаунту?'))return;
+  localStorage.removeItem('cg_client');
+  curClient=null;
+  showScreen('scr-auth');
+}
+
+// ===== INIT =====
+async function init(){
+  // Перевіряємо повернення після оплати
+  const urlParams=new URLSearchParams(window.location.search);
+  const orderRef=urlParams.get('order');
+  const subTypeId=urlParams.get('sub');
+
+  // Відновлюємо сесію
+  const saved=localStorage.getItem('cg_client');
+  if(saved){
+    curClient=JSON.parse(saved);
+    // Якщо повернулись після оплати
+    if(orderRef&&subTypeId&&curClient){
+      await handlePaymentReturn(orderRef,subTypeId);
+    }
+    loadHome();
+    showScreen('scr-home');
+  }
+}
+
+async function handlePaymentReturn(orderRef,subTypeId){
+  // Перевіряємо чи абонемент вже є
+  const existing=await apiGet('subscriptions',`?client_id=eq.${curClient.id}&type_id=eq.${subTypeId}&order=created_at.desc&limit=1`)||[];
+  const recent=existing[0];
+  const fiveMinAgo=new Date(Date.now()-5*60*1000);
+  if(recent&&new Date(recent.created_at)>fiveMinAgo){
+    showToast('✅ Абонемент успішно придбано!');
+    localStorage.removeItem('cg_pending_order');
+    window.history.replaceState({},'',window.location.pathname);
+    return;
+  }
+  // Якщо немає — можливо оплата ще обробляється
+  const pending=localStorage.getItem('cg_pending_order');
+  if(pending){
+    showToast('⏳ Оплата обробляється...','#F97316');
+    localStorage.removeItem('cg_pending_order');
+  }
+  window.history.replaceState({},'',window.location.pathname);
+}
+
+init();
+</script>
+</body>
+</html>
