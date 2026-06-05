@@ -928,15 +928,74 @@ async function sendSms(phone,message){
 }
 
 // ===== INIT =====
+async function activateAfterPayment(){
+  const pending=localStorage.getItem('cg_pending');
+  if(!pending) return;
+  const {orderRef,subId,amount}=JSON.parse(pending);
+  if(!subId||!curClient) return;
+
+  // Перевіряємо чи абонемент вже є
+  const existing=await get('subscriptions',`?client_id=eq.${curClient.id}&type_id=eq.${subId}&order=created_at.desc&limit=1`)||[];
+  if(existing.length>0){
+    const lastSub=existing[0];
+    const fiveMinAgo=new Date(Date.now()-10*60*1000);
+    if(new Date(lastSub.created_at)>fiveMinAgo){
+      localStorage.removeItem('cg_pending');
+      toast('✅ Абонемент активовано!');
+      return;
+    }
+  }
+
+  // Завантажуємо тип абонементу
+  const types=await get('subscription_types',`?id=eq.${subId}`)||[];
+  const t=types[0];
+  if(!t) return;
+
+  // Визначаємо дати
+  const today=new Date().toISOString().split('T')[0];
+  let endDate=null;
+  if(t.start_type==='з дати продажу'){
+    const end=new Date();
+    end.setDate(end.getDate()+parseInt(t.days||30));
+    endDate=end.toISOString().split('T')[0];
+  }
+
+  // Створюємо абонемент
+  const disc=curClient.streak>=1?Math.min(curClient.streak*3,33):0;
+  await post('subscriptions',{
+    client_id:curClient.id,
+    type_id:subId,
+    type_name:t.name,
+    price:amount,
+    original_price:t.price,
+    discount_pct:disc,
+    streak_at_purchase:curClient.streak||0,
+    start_date:today,
+    end_date:endDate,
+    status:t.start_type==='з дати продажу'?'active':'pending',
+    payment_method:'card',
+    start_type:t.start_type||'з дати продажу',
+    branch_id:_selectedBranchId||null
+  });
+
+  // Оновлюємо серію клієнта
+  const newStreak=(curClient.streak||0)+1;
+  await patch('clients',`id=eq.${curClient.id}`,{streak:newStreak,status:'active'});
+  curClient.streak=newStreak;
+  localStorage.setItem('cg_client',JSON.stringify(curClient));
+
+  localStorage.removeItem('cg_pending');
+  toast('✅ Абонемент успішно активовано!');
+}
+
 async function init(){
   const saved=localStorage.getItem('cg_client');
   if(saved){
     curClient=JSON.parse(saved);
     const urlParams=new URLSearchParams(window.location.search);
-    if(urlParams.get('order')){
-      toast('✅ Дякуємо за оплату! Абонемент буде активовано.');
-      localStorage.removeItem('cg_pending');
+    if(urlParams.get('order')||localStorage.getItem('cg_pending')){
       window.history.replaceState({},'',window.location.pathname);
+      await activateAfterPayment();
     }
     loadHome();
     showScreen('scr-home');
