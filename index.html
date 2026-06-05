@@ -826,7 +826,7 @@ async function doPay(subId,amount){
           orderId:orderRef,
           description:t.name,
           name:t.name,
-          redirectUrl:clientUrl+'?order='+orderRef+'&sub='+subId
+          redirectUrl:clientUrl
         })
       });
       const monoData=await monoRes.json();
