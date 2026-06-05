@@ -654,7 +654,7 @@ let _allBranches=[];
 async function loadShop(){
   const el=document.getElementById('shop-list');
   el.innerHTML='<div class="spin"></div>';
-  const sets=await get('settings','?key=in.(acq_provider,acq_merchant,acq_public_key,acq_client_url)')||[];
+  const sets=await get('settings','?key=in.(acq_provider,acq_merchant,acq_public_key,acq_mono_token,acq_client_url)')||[];
   sets.forEach(s=>_acqSettings[s.key]=s.value);
   _allBranches=await get('branches','?is_active=eq.true&order=created_at.asc')||[];
 
@@ -815,7 +815,31 @@ async function doPay(subId,amount){
   const p=_acqSettings.acq_provider;
   const form=document.createElement('form');
   form.method='POST';form.style.display='none';
-  if(p==='wayforpay'){
+  if(p==='monobank'){
+    try{
+      const monoRes=await fetch('https://creagym-one.vercel.app/api/monobank',{
+        method:'POST',
+        headers:{'Content-Type':'application/json'},
+        body:JSON.stringify({
+          token:_acqSettings.acq_mono_token,
+          amount,
+          orderId:orderRef,
+          description:t.name,
+          name:t.name,
+          redirectUrl:clientUrl+'?order='+orderRef+'&sub='+subId
+        })
+      });
+      const monoData=await monoRes.json();
+      if(monoData.pageUrl){
+        localStorage.setItem('cg_pending',JSON.stringify({orderRef,subId,amount}));
+        toast('Переходимо до Monobank...');
+        setTimeout(()=>window.location.href=monoData.pageUrl,500);
+      } else {
+        alert('❌ '+JSON.stringify(monoData));
+      }
+    }catch(e){alert('❌ '+e.message);}
+    return;
+  } else if(p==='wayforpay'){
     form.action='https://secure.wayforpay.com/pay';
     const f={merchantAccount:_acqSettings.acq_merchant,merchantDomainName:window.location.hostname,
       orderReference:orderRef,orderDate:Math.floor(Date.now()/1000),amount,currency:'UAH',
